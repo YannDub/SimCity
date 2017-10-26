@@ -64,7 +64,6 @@ end
 
 to init-car
   set size 2
-  move-to one-of patches with [pcolor = black]
   face one-of neighbors4 with [pcolor = black]
 end
 
@@ -93,13 +92,14 @@ end
 
 to go
   ask cars [advance2]
-  generate_cars
+  ask maisons with [current_capacity > 0] [generate_cars]
   mouse-manager
   tick
 end
 
 to generate_cars
-  ask maisons with [current_capacity > 0] [ ask obeserver [create-cars 1 [init-car setxy xcor ycor]] set current_capacity (current_capacity - 1)]
+  hatch-cars 1 [init-car setxy xcor ycor set color o]
+  set current_capacity (current_capacity - 1)
 end
 
 to advance
