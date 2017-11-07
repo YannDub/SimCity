@@ -9,6 +9,7 @@ breed [cars car]
 
 maisons-own[max_capacity current_capacity]
 usines-own[max_capacity current_capacity]
+patches-own[dist]
 
 to-report mouse-clicked?
   report (mouse-was-down? = true and not mouse-down?)
@@ -48,6 +49,7 @@ to setup
   set-default-shape maisons "house"
   set-default-shape usines "house"
   set-default-shape cars "car"
+
   ;create-cars nb-cars [  init-car ]
 end
 
@@ -93,9 +95,14 @@ to click
   ]
 end
 
+to dijkstra
+
+end
+
 to go
   ask cars [advance2]
-  ask maisons with [current_capacity > 0] [if ((random ) = 0) [generate_cars]]
+  ask maisons with [current_capacity > 0] [if ((random maison-sortie) = 0) [generate_cars]]
+  ask usines with [current_capacity > 0] [if ((random usine-sortie) = 0) [generate_cars]]
   mouse-manager
 
   if ((ticks mod 10000) <= 9999) [

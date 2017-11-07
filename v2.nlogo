@@ -93,6 +93,10 @@ to click
   ]
 end
 
+to dijkstra
+
+end
+
 to go
   ask cars [advance2]
   ask maisons with [current_capacity > 0] [if ((random maison-sortie) = 0) [generate_cars]]
