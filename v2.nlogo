@@ -1,13 +1,14 @@
 ; Pr Philippe MATHIEU - CRISTAL - Univ Lille1
 ;
 ;
-globals [ mouse-was-down? ]
+globals [ mouse-was-down? maison-entree usine-entree maison-sortie usine-sortie]
 
 breed [maisons maison]
 breed [usines usine]
 breed [cars car]
 
 maisons-own[max_capacity current_capacity]
+usines-own[max_capacity current_capacity]
 
 to-report mouse-clicked?
   report (mouse-was-down? = true and not mouse-down?)
@@ -60,11 +61,13 @@ end
 to init-usine
   set size 2
   set color orange
+  set max_capacity (15 + random 35)
 end
 
 to init-car
   set size 2
   face one-of neighbors4 with [pcolor = black]
+  set label ""
 end
 
 to mouse-manager
@@ -92,8 +95,33 @@ end
 
 to go
   ask cars [advance2]
-  ask maisons with [current_capacity > 0] [generate_cars]
+  ask maisons with [current_capacity > 0] [if ((random maison-sortie) = 0) [generate_cars]]
+  ask usines with [current_capacity > 0] [if ((random usine-sortie) = 0) [generate_cars]]
   mouse-manager
+
+  if ((ticks mod 10000) <= 9999) [
+    set maison-entree 1
+    set maison-sortie 100
+    set usine-entree 9000
+    set usine-sortie 1
+  ]
+
+  if ((ticks mod 10000) <= 8000) [
+    set maison-entree 20
+    set maison-sortie 20
+    set usine-entree 100
+    set usine-sortie 9000
+  ]
+
+  if ((ticks mod 10000) <= 2000) [
+    set maison-entree 50
+    set maison-sortie 3
+    set usine-entree 1
+    set usine-sortie 9000
+  ]
+
+  ask maisons [set label (word current_capacity "/" max_capacity)]
+  ask usines [set label (word current_capacity "/" max_capacity)]
   tick
 end
 
@@ -122,6 +150,32 @@ to advance2
     [ move-to one-of ((patch-set f r l) with [pcolor = black])
       ifelse (patch-here =  r) [right 90]
         [ if (patch-here =  l) [left 90] ]]
+
+  let m one-of maisons with [patch-here = l]
+  ifelse ([pcolor] of l = red) and (random maison-entree = 0) and (([current_capacity] of m) < ([max_capacity] of m)) [
+    ask m [set current_capacity (current_capacity + 1)]
+    die
+  ] [
+    set m one-of maisons with [patch-here = r]
+    if ([pcolor] of r = red) and (random maison-entree = 0) and (([current_capacity] of m) < ([max_capacity] of m)) [
+      ask m [set current_capacity (current_capacity + 1)]
+      die
+    ]
+  ]
+
+  let u one-of usines with [patch-here = l]
+  ifelse ([pcolor] of l = orange) and (random usine-entree = 0) and (([current_capacity] of u) < ([max_capacity] of u)) [
+    ask u [set current_capacity (current_capacity + 1)]
+    die
+  ] [
+    set u one-of usines with [patch-here = r]
+    if ([pcolor] of r = orange) and (random usine-entree = 0) and (([current_capacity] of u) < ([max_capacity] of u)) [
+      ask u [set current_capacity (current_capacity + 1)]
+      die
+    ]
+  ]
+
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
