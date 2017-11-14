@@ -114,7 +114,7 @@ to click
       create-maisons 1 [init-maison setxy mouse-xcor mouse-ycor]
       ask patch mouse-xcor mouse-ycor [set pcolor red]
     ] [
-      crt 1 [setxy mouse-xcor mouse-ycor set color pink set shape "tree" set size 2]
+      crt 1 [setxy mouse-xcor mouse-ycor set color pink set shape "tree]
     ]
   ]
 end
