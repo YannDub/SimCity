@@ -9,7 +9,6 @@ breed [cars car]
 
 maisons-own[max_capacity current_capacity]
 usines-own[max_capacity current_capacity]
-patches-own[dist]
 
 to-report mouse-clicked?
   report (mouse-was-down? = true and not mouse-down?)
@@ -49,7 +48,6 @@ to setup
   set-default-shape maisons "house"
   set-default-shape usines "house"
   set-default-shape cars "car"
-
   ;create-cars nb-cars [  init-car ]
 end
 
@@ -105,23 +103,30 @@ to go
   ask usines with [current_capacity > 0] [if ((random usine-sortie) = 0) [generate_cars]]
   mouse-manager
 
-  if ((ticks mod 10000) <= 9999) [
+  if ((ticks mod 12000) <= 119999) [
     set maison-entree 1
-    set maison-sortie 100
+    set maison-sortie 9000
     set usine-entree 9000
     set usine-sortie 1
   ]
 
-  if ((ticks mod 10000) <= 8000) [
+  if ((ticks mod 12000) <= 8000) [
     set maison-entree 20
-    set maison-sortie 20
+    set maison-sortie 100
+    set usine-entree 9000
+    set usine-sortie 5
+  ]
+
+  if ((ticks mod 12000) <= 6000) [
+    set maison-entree 50
+    set maison-sortie 50
     set usine-entree 100
     set usine-sortie 9000
   ]
 
-  if ((ticks mod 10000) <= 2000) [
-    set maison-entree 50
-    set maison-sortie 3
+  if ((ticks mod 12000) <= 2000 ) [
+    set maison-entree 200
+    set maison-sortie 5
     set usine-entree 1
     set usine-sortie 9000
   ]
