@@ -9,10 +9,10 @@ breed [cars car]
 breed [electricals electrical]
 breed [electrons electron]
 
-maisons-own[max_capacity current_capacity current_elec max_elec]
-usines-own[max_capacity current_capacity current_elec max_elec]
+maisons-own[max_capacity current_capacity current_elec max_elec ttl]
+usines-own[max_capacity current_capacity current_elec max_elec ttl]
 electricals-own[max_capacity current_capacity]
-electrons-own[current_capacity]
+electrons-own[current_capacity ttl]
 
 to-report mouse-clicked?
   report (mouse-was-down? = true and not mouse-down?)
@@ -59,6 +59,7 @@ end
 
 to init-maison
   set size 2
+  set ttl 100
   set color red
   set max_capacity (1 + random 4)
   set current_capacity max_capacity
@@ -66,6 +67,7 @@ end
 
 to init-usine
   set size 2
+  set ttl 100
   set color orange
   set max_capacity (15 + random 35)
 end
@@ -84,6 +86,7 @@ end
 
 to init-electron
   set size 1
+  set ttl 1000
   face one-of neighbors4 with [pcolor = black]
   set label ""
 end
@@ -97,6 +100,11 @@ to mouse-manager
 end
 
 to click
+  if ([pcolor] of (patch mouse-xcor mouse-ycor) = yellow) [
+    ask electricals-on (patch mouse-xcor mouse-ycor) [die]
+    ask patch mouse-xcor mouse-ycor [set pcolor green]
+  ]
+
   if ([pcolor] of (patch mouse-xcor mouse-ycor) = orange) [
     ask usines-on (patch mouse-xcor mouse-ycor) [die]
     create-electricals 1 [init-electrical setxy mouse-xcor mouse-ycor]
@@ -126,6 +134,15 @@ to go
   ask maisons with [current_capacity > 0] [if ((random maison-sortie) = 0) [generate_cars]]
   ask usines with [current_capacity > 0] [if ((random usine-sortie) = 0) [generate_cars]]
   ask electricals [if ((ticks mod 30) = 0) [generate_electrons]]
+
+  ask maisons with [current_elec > 0] [decreaseElectron]
+  ask usines with [current_elec > 0] [decreaseElectron]
+
+  ask maisons with [ttl = 0] [ask patch-here [set pcolor green] die]
+  ask usines with [ttl = 0] [ask patch-here [set pcolor green] die]
+
+  ask maisons with [current_elec = 0] [set ttl (ttl - 1)]
+  ask usines with [current_elec = 0] [set ttl (ttl - 1)]
 
   mouse-manager
 
@@ -170,6 +187,10 @@ end
 
 to generate_electrons
   hatch-electrons 1 [init-electron setxy xcor ycor set color yellow set current_capacity 1000]
+end
+
+to decreaseElectron
+  set current_elec (current_elec - 1 - current_capacity)
 end
 
 to advance
@@ -229,6 +250,9 @@ to advanceElectron
     [ move-to one-of ((patch-set f r l) with [pcolor = black])
       ifelse (patch-here =  r) [right 90]
         [ if (patch-here =  l) [left 90] ]]
+
+  set ttl (ttl - 1)
+  if ((ttl = 0) or (current_capacity = 0)) [die]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -349,7 +373,7 @@ true
 false
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot count turtles"
+"default" 1.0 0 -16777216 true "" "plot count cars"
 
 SLIDER
 32
