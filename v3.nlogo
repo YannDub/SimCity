@@ -63,6 +63,8 @@ to init-maison
   set color red
   set max_capacity (1 + random 4)
   set current_capacity max_capacity
+  set current_elec 1000
+  set max_elec 1000
 end
 
 to init-usine
@@ -70,6 +72,8 @@ to init-usine
   set ttl 100
   set color orange
   set max_capacity (15 + random 35)
+  set current_elec 1000
+  set max_elec 1000
 end
 
 to init-electrical
@@ -138,7 +142,7 @@ to go
   ask maisons with [current_elec > 0] [decreaseElectron]
   ask usines with [current_elec > 0] [decreaseElectron]
 
-  ask maisons with [ttl = 0] [ask patch-here [set pcolor green] die]
+  ask maisons with [ttl = 0] [killPeople ask patch-here [set pcolor green] die]
   ask usines with [ttl = 0] [ask patch-here [set pcolor green] die]
 
   ask maisons with [current_elec = 0] [set ttl (ttl - 1)]
@@ -241,6 +245,16 @@ to advance2
 
 end
 
+to killPeople
+  ifelse count cars >= (max_capacity - current_capacity) [
+    ask n-of (max_capacity - current_capacity) cars [die]
+  ] [
+    let diff (max_capacity - current_capacity - count cars)
+    ask cars [die]
+    ask (n-of 1 usines with [current_capacity > diff]) [set current_capacity (current_capacity - diff)]
+  ]
+end
+
 to advanceElectron
   let f patch-ahead 1
   let r patch-at-heading-and-distance (heading + 90) 1
@@ -253,16 +267,69 @@ to advanceElectron
 
   set ttl (ttl - 1)
   if ((ttl = 0) or (current_capacity = 0)) [die]
+
+  let m one-of maisons with [patch-here = l]
+
+  ifelse ([pcolor] of l = red) and (([current_elec] of m) < ([max_elec] of m)) [
+    ifelse (current_capacity > (([max_elec] of m) - ([current_elec] of m))) [
+      set current_capacity (current_capacity - (([max_elec] of m) - ([current_elec] of m)))
+      ask m [set current_elec max_elec]
+    ] [
+      let elec current_capacity
+      set current_capacity 0
+      ask m [set current_elec (current_elec + elec)]
+      die
+    ]
+  ] [
+    set m one-of maisons with [patch-here = r]
+    if ([pcolor] of r = red) and (([current_elec] of m) < ([max_elec] of m)) [
+      ifelse (current_capacity > (([max_elec] of m) - ([current_elec] of m))) [
+        set current_capacity (current_capacity - (([max_elec] of m) - ([current_elec] of m)))
+        ask m [set current_elec max_elec]
+      ] [
+        let elec current_capacity
+        set current_capacity 0
+        ask m [set current_elec (current_elec + elec)]
+        die
+      ]
+    ]
+  ]
+
+  let u one-of usines with [patch-here = l]
+  ifelse ([pcolor] of l = orange) and (([current_elec] of u) < ([max_elec] of u)) [
+    ifelse (current_capacity > (([max_elec] of u) - ([current_elec] of u))) [
+      set current_capacity (current_capacity - (([max_elec] of u) - ([current_elec] of u)))
+      ask u [set current_elec max_elec]
+    ] [
+      let elec current_capacity
+      set current_capacity 0
+      ask u [set current_elec (current_elec + elec)]
+      die
+    ]
+  ] [
+    set u one-of usines with [patch-here = r]
+    if ([pcolor] of r = orange) and (([current_elec] of u) < ([max_elec] of u)) [
+      ifelse (current_capacity > (([max_elec] of u) - ([current_elec] of u))) [
+        set current_capacity (current_capacity - (([max_elec] of u) - ([current_elec] of u)))
+        ask u [set current_elec max_elec]
+      ] [
+        let elec current_capacity
+        set current_capacity 0
+        ask u [set current_elec (current_elec + elec)]
+        die
+      ]
+    ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-992
-18
-1726
-753
+955
+2
+1556
+604
 -1
 -1
-6.0
+4.901
 1
 10
 1
