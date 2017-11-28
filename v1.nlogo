@@ -70,13 +70,13 @@ to advance2
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-264
-10
+597
+177
 1119
-866
+700
 -1
 -1
-7.0
+4.25
 1
 10
 1
@@ -174,11 +174,11 @@ count turtles
 PLOT
 30
 365
-230
-515
+519
+726
 plot 1
-NIL
-NIL
+time
+nbTurtle
 0.0
 10.0
 0.0
