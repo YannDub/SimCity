@@ -13,7 +13,7 @@ breed [waters water]
 
 maisons-own[max_capacity current_capacity current_elec max_elec current_water max_water ttl]
 usines-own[max_capacity current_capacity current_elec max_elec current_water max_water ttl]
-electricals-own[max_capacity current_capacity]
+
 electrons-own[current_capacity ttl]
 waters-own[current_capacity ttl]
 
@@ -166,16 +166,16 @@ to go
 
   ask maisons with [current_elec > 0] [decreaseElectron]
   ask usines with [current_elec > 0] [decreaseElectron]
-  ask maisons with [current_ele > 0] [decreaseWater]
-  ask usines with [current_elec > 0] [decreaseWater]
+  ask maisons with [current_water > 0] [decreaseWater]
+  ask usines with [current_water > 0] [decreaseWater]
 
   ask maisons with [ttl <= 0] [killPeople ask patch-here [set pcolor green] die]
   ask usines with [ttl <= 0] [ask patch-here [set pcolor green] die]
 
-  ask maisons with [current_elec = 0 or current_water = 0] [set ttl (ttl - 1)]
-  ask usines with [current_elec = 0 or current_water = 0] [set ttl (ttl - 1)]
-  ;ask maisons with [current_water = 0] [set ttl (ttl - 1)]
-  ;ask usines with [current_water = 0] [set ttl (ttl - 1)]
+  ask maisons with [current_elec = 0] [set ttl (ttl - 1)]
+  ask usines with [current_elec = 0] [set ttl (ttl - 1)]
+  ask maisons with [current_water = 0] [set ttl (ttl - 1)]
+  ask usines with [current_water = 0] [set ttl (ttl - 1)]
 
   print [ttl] of maisons
 
