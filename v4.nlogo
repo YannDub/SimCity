@@ -65,19 +65,23 @@ to init-maison
   set size 2
   set ttl 100
   set color red
-  set max_capacity (1 + random 4)
+  set max_capacity (1 + random max_people_house)
   set current_capacity max_capacity
-  set current_elec 1000
-  set max_elec 1000
+  set current_elec max_electricity
+  set max_elec max_electricity
+  set current_water max_water_capacity
+  set max_water max_water_capacity
 end
 
 to init-usine
   set size 2
   set ttl 100
   set color orange
-  set max_capacity (15 + random 35)
-  set current_elec 1000
-  set max_elec 1000
+  set max_capacity (15 + random max_people_usine)
+  set current_elec max_electricity
+  set max_elec max_electricity
+  set current_water max_water_capacity
+  set max_water max_water_capacity
 end
 
 to init-electrical
@@ -550,6 +554,66 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+236
+29
+430
+62
+max_people_house
+max_people_house
+0
+8
+5.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+249
+78
+428
+111
+max_people_usine
+max_people_usine
+1
+50
+40.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+254
+132
+426
+165
+max_electricity
+max_electricity
+1000
+5000
+1000.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+242
+187
+442
+220
+max_water_capacity
+max_water_capacity
+1000
+5000
+1000.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
