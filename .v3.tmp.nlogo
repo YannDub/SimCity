@@ -8,14 +8,11 @@ breed [usines usine]
 breed [cars car]
 breed [electricals electrical]
 breed [electrons electron]
-breed [watertowers watertower]
-breed [waters water]
 
-maisons-own[max_capacity current_capacity current_elec max_elec current_water max_water ttl]
-usines-own[max_capacity current_capacity current_elec max_elec current_water max_water ttl]
+maisons-own[max_capacity current_capacity current_elec max_elec ttl]
+usines-own[max_capacity current_capacity current_elec max_elec ttl]
 
 electrons-own[current_capacity ttl]
-waters-own[current_capacity ttl]
 
 to-report mouse-clicked?
   report (mouse-was-down? = true and not mouse-down?)
@@ -52,13 +49,11 @@ end
 
 to setup
   reset-ticks
-  set-default-shape watertowers "house"
   set-default-shape electricals "house"
   set-default-shape maisons "house"
   set-default-shape usines "house"
   set-default-shape cars "car"
   set-default-shape electrons "star"
-  set-default-shape waters "star"
   ;create-cars nb-cars [  init-car ]
 end
 
@@ -87,11 +82,6 @@ to init-electrical
   set max_capacity (15 + random 35)
 end
 
-to init-watertower
-  set size 2
-  set color cyan
-end
-
 to init-car
   set size 2
   face one-of neighbors4 with [pcolor = black]
@@ -99,13 +89,6 @@ to init-car
 end
 
 to init-electron
-  set size 1
-  set ttl 1000
-  face one-of neighbors4 with [pcolor = black]
-  set label ""
-end
-
-to init-water
   set size 1
   set ttl 1000
   face one-of neighbors4 with [pcolor = black]
@@ -121,15 +104,9 @@ to mouse-manager
 end
 
 to click
-  if ([pcolor] of (patch mouse-xcor mouse-ycor) = cyan) [
-    ask watertowers-on (patch mouse-xcor mouse-ycor) [die]
-    ask patch mouse-xcor mouse-ycor [set pcolor green]
-  ]
-
   if ([pcolor] of (patch mouse-xcor mouse-ycor) = yellow) [
     ask electricals-on (patch mouse-xcor mouse-ycor) [die]
-    create-watertowers 1 [init-watertower setxy mouse-xcor mouse-ycor]
-    ask patch mouse-xcor mouse-ycor [set pcolor cyan]
+    ask patch mouse-xcor mouse-ycor [set pcolor green]
   ]
 
   if ([pcolor] of (patch mouse-xcor mouse-ycor) = orange) [
@@ -157,27 +134,19 @@ end
 to go
   ask cars [advance2]
   ask electrons [advanceElectron]
-  ask waters [advanceWater]
 
   ask maisons with [current_capacity > 0] [if ((random maison-sortie) = 0) [generate_cars]]
   ask usines with [current_capacity > 0] [if ((random usine-sortie) = 0) [generate_cars]]
   ask electricals [if ((ticks mod 30) = 0) [generate_electrons]]
-  ask watertowers [if ((ticks mod 30) = 0) [generate_waters]]
 
   ask maisons with [current_elec > 0] [decreaseElectron]
   ask usines with [current_elec > 0] [decreaseElectron]
-  ask maisons with [current_water > 0] [decreaseWater]
-  ask usines with [current_water > 0] [decreaseWater]
 
-  ask maisons with [ttl <= 0] [killPeople ask patch-here [set pcolor green] die]
-  ask usines with [ttl <= 0] [ask patch-here [set pcolor green] die]
+  ask maisons with [ttl = 0] [killPeople ask patch-here [set pcolor green] die]
+  ask usines with [ttl = 0] [ask patch-here [set pcolor green] die]
 
   ask maisons with [current_elec = 0] [set ttl (ttl - 1)]
   ask usines with [current_elec = 0] [set ttl (ttl - 1)]
-  ask maisons with [current_water = 0] [set ttl (ttl - 1)]
-  ask usines with [current_water = 0] [set ttl (ttl - 1)]
-
-  print [ttl] of maisons
 
   mouse-manager
 
@@ -224,16 +193,8 @@ to generate_electrons
   hatch-electrons 1 [init-electron setxy xcor ycor set color yellow set current_capacity 1000]
 end
 
-to generate_waters
-  hatch-waters 1 [init-water setxy xcor ycor set color cyan set current_capacity 1000]
-end
-
 to decreaseElectron
   set current_elec (current_elec - 1 - current_capacity)
-end
-
-to decreaseWater
-  set current_water (current_water - 1 - current_capacity)
 end
 
 to advance
@@ -360,73 +321,6 @@ to advanceElectron
     ]
   ]
 end
-
-to advanceWater
-  let f patch-ahead 1
-  let r patch-at-heading-and-distance (heading + 90) 1
-  let l patch-at-heading-and-distance (heading - 90) 1
-  ifelse (not any? ((patch-set f r l) with [pcolor = black]))
-    [ right 180 ]
-    [ move-to one-of ((patch-set f r l) with [pcolor = black])
-      ifelse (patch-here =  r) [right 90]
-        [ if (patch-here =  l) [left 90] ]]
-
-  set ttl (ttl - 1)
-  if ((ttl = 0) or (current_capacity = 0)) [die]
-
-  let m one-of maisons with [patch-here = l]
-
-  ifelse ([pcolor] of l = red) and (([current_water] of m) < ([max_water] of m)) [
-    ifelse (current_capacity > (([max_water] of m) - ([current_water] of m))) [
-      set current_capacity (current_capacity - (([max_water] of m) - ([current_water] of m)))
-      ask m [set current_water max_water]
-    ] [
-      let w current_capacity
-      set current_capacity 0
-      ask m [set current_water (current_water + w)]
-      die
-    ]
-  ] [
-    set m one-of maisons with [patch-here = r]
-    if ([pcolor] of r = red) and (([current_water] of m) < ([max_water] of m)) [
-      ifelse (current_capacity > (([max_water] of m) - ([current_water] of m))) [
-        set current_capacity (current_capacity - (([max_water] of m) - ([current_water] of m)))
-        ask m [set current_water max_water]
-      ] [
-        let w current_capacity
-        set current_capacity 0
-        ask m [set current_elec (current_water + w)]
-        die
-      ]
-    ]
-  ]
-
-  let u one-of usines with [patch-here = l]
-  ifelse ([pcolor] of l = orange) and (([current_water] of u) < ([max_water] of u)) [
-    ifelse (current_capacity > (([max_water] of u) - ([current_water] of u))) [
-      set current_capacity (current_capacity - (([max_water] of u) - ([current_water] of u)))
-      ask u [set current_water max_water]
-    ] [
-      let w current_capacity
-      set current_capacity 0
-      ask u [set current_water (current_water + w)]
-      die
-    ]
-  ] [
-    set u one-of usines with [patch-here = r]
-    if ([pcolor] of r = orange) and (([current_water] of u) < ([max_water] of u)) [
-      ifelse (current_capacity > (([max_water] of u) - ([current_water] of u))) [
-        set current_capacity (current_capacity - (([max_water] of u) - ([current_water] of u)))
-        ask u [set current_water max_water]
-      ] [
-        let w current_capacity
-        set current_capacity 0
-        ask u [set current_water (current_water + w)]
-        die
-      ]
-    ]
-  ]
-end
 @#$#@#$#@
 GRAPHICS-WINDOW
 955
@@ -479,7 +373,7 @@ proba-continue
 proba-continue
 0
 100
-69.0
+100.0
 1
 1
 %
@@ -519,6 +413,17 @@ NIL
 NIL
 1
 
+MONITOR
+36
+282
+129
+327
+NIL
+count turtles
+0
+1
+11
+
 PLOT
 30
 365
@@ -536,6 +441,21 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot count cars"
+
+SLIDER
+32
+233
+204
+266
+nb-cars
+nb-cars
+0
+100
+100.0
+1
+1
+NIL
+HORIZONTAL
 
 BUTTON
 27

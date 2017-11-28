@@ -11,7 +11,6 @@ breed [electrons electron]
 
 maisons-own[max_capacity current_capacity current_elec max_elec ttl]
 usines-own[max_capacity current_capacity current_elec max_elec ttl]
-electricals-own[max_capacity current_capacity]
 electrons-own[current_capacity ttl]
 
 to-report mouse-clicked?
@@ -79,7 +78,6 @@ end
 to init-electrical
   set size 2
   set color yellow
-  set max_capacity (15 + random 35)
 end
 
 to init-car
@@ -180,7 +178,6 @@ to go
 
   ask maisons [set label (word current_capacity "/" max_capacity)]
   ask usines [set label (word current_capacity "/" max_capacity)]
-  ask electricals [set label (word current_capacity "/" max_capacity)]
   tick
 end
 
