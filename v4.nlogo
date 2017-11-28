@@ -8,6 +8,8 @@ breed [usines usine]
 breed [cars car]
 breed [electricals electrical]
 breed [electrons electron]
+breed [watertowers watertower]
+breed [waters water]
 
 maisons-own[max_capacity current_capacity current_elec max_elec ttl]
 usines-own[max_capacity current_capacity current_elec max_elec ttl]
@@ -373,7 +375,7 @@ proba-continue
 proba-continue
 0
 100
-100.0
+69.0
 1
 1
 %
