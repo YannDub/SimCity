@@ -240,7 +240,7 @@ proba-continue
 proba-continue
 0
 100
-100.0
+50.0
 1
 1
 %
@@ -294,8 +294,8 @@ count turtles
 PLOT
 30
 365
-230
-515
+704
+719
 plot 1
 NIL
 NIL
@@ -307,7 +307,7 @@ true
 false
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot count turtles"
+"default" 1.0 0 -16777216 true "" "plot count cars"
 
 SLIDER
 32
