@@ -1,7 +1,7 @@
 ; Pr Philippe MATHIEU - CRISTAL - Univ Lille1
 ;
 ;
-globals [ mouse-was-down? maison-entree usine-entree maison-sortie usine-sortie]
+globals [ mouse-was-down? maison-entree usine-entree maison-sortie usine-sortie income]
 
 breed [maisons maison]
 breed [usines usine]
@@ -59,6 +59,8 @@ to setup
   set-default-shape electrons "star"
   set-default-shape waters "star"
   ;create-cars nb-cars [  init-car ]
+
+  set income startIncome
 end
 
 to init-maison
@@ -134,22 +136,25 @@ to click
     ask patch mouse-xcor mouse-ycor [set pcolor cyan]
   ]
 
-  if ([pcolor] of (patch mouse-xcor mouse-ycor) = orange) [
+  if ([pcolor] of (patch mouse-xcor mouse-ycor) = orange and income >= 100) [
     ask usines-on (patch mouse-xcor mouse-ycor) [die]
     create-electricals 1 [init-electrical setxy mouse-xcor mouse-ycor]
     ask patch mouse-xcor mouse-ycor [set pcolor yellow]
+    set income (income - 100)
   ]
 
-  if ([pcolor] of (patch mouse-xcor mouse-ycor) = red) [
+  if ([pcolor] of (patch mouse-xcor mouse-ycor) = red and income >= 100) [
     ask maisons-on (patch mouse-xcor mouse-ycor) [killPeople die]
     create-usines 1 [init-usine setxy mouse-xcor mouse-ycor]
     ask patch mouse-xcor mouse-ycor [set pcolor orange]
+    set income (income - 100)
   ]
 
   if ([pcolor] of (patch mouse-xcor mouse-ycor) = green) [
-    ifelse (count ([neighbors4] of patch mouse-xcor mouse-ycor) with [pcolor = black] > 0) [
+    ifelse (count ([neighbors4] of patch mouse-xcor mouse-ycor) with [pcolor = black] > 0 and income >= 100) [
       create-maisons 1 [init-maison setxy mouse-xcor mouse-ycor]
       ask patch mouse-xcor mouse-ycor [set pcolor red]
+      set income (income - 100)
     ] [
       crt 1 [setxy mouse-xcor mouse-ycor set color pink set shape "tree" set size 2]
     ]
@@ -180,6 +185,10 @@ to go
   ask usines with [current_water = 0] [set ttl (ttl - 1)]
 
   ask maisons with [current_elec > 0 and current_water > 0] [set ttl ttl_bat]
+
+  if (ticks mod 1000 = 0) [
+    set income (income + (sum [current_capacity] of usines) * salary)
+  ]
 
   mouse-manager
 
@@ -525,7 +534,7 @@ PLOT
 365
 515
 694
-plot 1
+Day/Night cycle
 time
 people
 0.0
@@ -625,8 +634,8 @@ ttl_elec
 ttl_elec
 0
 1000
-1000.0
-1
+300.0
+10
 1
 NIL
 HORIZONTAL
@@ -640,8 +649,8 @@ ttl_water
 ttl_water
 0
 1000
-1000.0
-1
+300.0
+10
 1
 NIL
 HORIZONTAL
@@ -656,6 +665,54 @@ ttl_bat
 0
 1000
 100.0
+1
+1
+NIL
+HORIZONTAL
+
+PLOT
+521
+363
+921
+692
+Income
+Time
+dollars
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"income" 1.0 0 -16777216 true "" "plot income"
+
+SLIDER
+716
+31
+888
+64
+startIncome
+startIncome
+1000
+5000
+1000.0
+100
+1
+NIL
+HORIZONTAL
+
+SLIDER
+717
+92
+889
+125
+salary
+salary
+1
+100
+10.0
 1
 1
 NIL

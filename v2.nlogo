@@ -297,17 +297,18 @@ PLOT
 704
 719
 plot 1
-NIL
-NIL
+time
+people
 0.0
 10.0
 0.0
 10.0
 true
-false
+true
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot count cars"
+"nbCars" 1.0 0 -13345367 true "" "plot count cars"
+"nbWorker" 1.0 0 -2674135 true "" "plot sum [current_capacity] of usines"
 
 SLIDER
 32

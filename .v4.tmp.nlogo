@@ -523,8 +523,8 @@ NIL
 PLOT
 30
 365
+230
 515
-694
 plot 1
 time
 people
