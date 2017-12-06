@@ -370,7 +370,7 @@ proba-continue
 proba-continue
 0
 100
-50.0
+63.0
 1
 1
 %
@@ -551,10 +551,10 @@ NIL
 HORIZONTAL
 
 PLOT
-449
-12
-854
-428
+650
+25
+1055
+441
 Demographie
 time
 people
