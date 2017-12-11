@@ -625,7 +625,7 @@ ttl_elec
 ttl_elec
 0
 1000
-1000.0
+306.0
 1
 1
 NIL
@@ -640,7 +640,7 @@ ttl_water
 ttl_water
 0
 1000
-1000.0
+306.0
 1
 1
 NIL
@@ -660,6 +660,43 @@ ttl_bat
 1
 NIL
 HORIZONTAL
+
+PLOT
+525
+365
+947
+694
+Demographie
+time
+people
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"people" 1.0 0 -16777216 true "" "plot sum [current_capacity] of maisons + sum [current_capacity] of usines + count cars"
+
+PLOT
+518
+22
+946
+354
+Energy
+time
+amount
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"electricity" 1.0 0 -2674135 true "" "plot sum [current_capacity] of electrons"
+"water" 1.0 0 -13791810 true "" "plot sum [current_capacity] of waters"
 
 @#$#@#$#@
 ## WHAT IS IT?
